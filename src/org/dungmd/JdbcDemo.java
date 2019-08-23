@@ -16,6 +16,9 @@ public class JdbcDemo {
             Circle circle = jdbcDao.getCircleById(1);
             System.out.println(circle.toString());
             
+            
+            jdbcDao.deleteCircleById(3);
+            System.out.println(jdbcDao.getCircleCount());
             jdbcDao.insertCircle(new Circle(3, "Third Name"));
             System.out.println(jdbcDao.getCircleCount());
             

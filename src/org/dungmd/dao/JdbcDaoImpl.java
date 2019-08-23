@@ -13,6 +13,9 @@ import org.dungmd.model.Circle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
 /*
@@ -41,13 +44,13 @@ public class JdbcDaoImpl {
     private DataSource dataSource;
     
     @Autowired
-    JdbcTemplate jdbcTemplate;   
+    NamedParameterJdbcTemplate jdbcTemplate;   
 
-    public JdbcTemplate getJdbcTemplate() {
+    public NamedParameterJdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
 
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+    public void setJdbcTemplate(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -61,8 +64,9 @@ public class JdbcDaoImpl {
     }
     
     public Circle getCircleById(int id) {
-        String sql = "SELECT * from circle where id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[] {id}, new CircleMapper());
+        String sql = "SELECT * from circle where id = :id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.queryForObject(sql, namedParameters, new CircleMapper());
     }
     
     public List<Circle> getAllCircles() {
@@ -72,12 +76,19 @@ public class JdbcDaoImpl {
     
     public int getCircleCount() {
         String sql = "SELECT COUNT(*) FROM circle";
-        return jdbcTemplate.queryForObject(sql, int.class);
+        return jdbcTemplate.queryForObject(sql, new MapSqlParameterSource(), int.class);
     }
     
     public void insertCircle(Circle circle) {
-        String sql = "INSERT INTO circle (ID, NAME) VALUES (?, ?)";
-        jdbcTemplate.update(sql, new Object[] {circle.getId(),  circle.getName()});
+        String sql = "INSERT INTO circle (ID, NAME) VALUES (:id, :name)";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("id", circle.getId()).addValue("name", circle.getName());
+        jdbcTemplate.update(sql, namedParameters);
+    }
+    
+    public void deleteCircleById(int id) {
+        String sql = "DELETE FROM circle where id = :id";
+        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+        jdbcTemplate.update(sql, namedParameters);
     }
     
     public void myCleanup() throws Exception {
