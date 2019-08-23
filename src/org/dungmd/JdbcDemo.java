@@ -1,6 +1,7 @@
 package org.dungmd;
 
 import org.dungmd.dao.JdbcDaoImpl;
+import org.dungmd.dao.JdbcDaoImplementation;
 import org.dungmd.model.Circle;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -25,6 +26,10 @@ public class JdbcDemo {
             for (Circle c : jdbcDao.getAllCircles()) {
                 System.out.println(c);
             }
+            
+            System.out.println("Using a new DAO");
+            JdbcDaoImplementation myDao = aContext.getBean("jdbcDaoImplementation", JdbcDaoImplementation.class);
+            System.out.println(myDao.getCircleCount());
         } catch (Exception e) {
             e.printStackTrace();
         }

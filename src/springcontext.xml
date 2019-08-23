@@ -30,4 +30,8 @@
             </list>
         </property>
     </bean>
+    
+    <bean id="jdbcDaoImplementation" class="org.dungmd.dao.JdbcDaoImplementation">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
 </beans>
