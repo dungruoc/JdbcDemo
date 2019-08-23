@@ -12,11 +12,13 @@
     <context:annotation-config />
     <context:component-scan base-package="org.dungmd" />
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <property name="driverClassName" value="${database.driver}" />
         <property name="url" value="${database.url}" />
         <property name="username" value="${database.user}" />
         <property name="password" value="${database.password}" />
+        <property name="initialSize" value="${database.initialPool}"/>
+        <property name="maxTotal" value="${database.maxTotal}"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

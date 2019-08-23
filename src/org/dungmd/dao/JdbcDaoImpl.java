@@ -33,9 +33,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JdbcDaoImpl {
-    
-    private Connection connection;
-    
+       
     @Autowired
     private DataSource dataSource;
     
@@ -46,6 +44,7 @@ public class JdbcDaoImpl {
 
     public Circle getCircle(int id) {
         Circle circle = null;
+        Connection connection = null;
         try {
             connection = dataSource.getConnection();
             PreparedStatement sqlStatement = connection.prepareStatement("SELECT * from circle where id = ?");
@@ -58,14 +57,19 @@ public class JdbcDaoImpl {
             sqlStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+        
         return circle;
     }
     
     public void myCleanup() throws Exception {
         System.out.println("Spring terminating");
-        connection.close();
-        System.out.println("JdbcDaoImpl connection close");
     }
 
     public DataSource getDataSource() {
