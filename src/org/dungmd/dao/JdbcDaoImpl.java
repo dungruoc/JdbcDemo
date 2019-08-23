@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import org.dungmd.model.Circle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /*
@@ -31,16 +34,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class JdbcDaoImpl {
     
-    private Connection connection; 
+    private Connection connection;
     
-    public JdbcDaoImpl() throws Exception {
-        connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/test?user=root&password=root");
-        System.out.println("JdbcDaoImpl connection established");
-    }
+    @Autowired
+    private DataSource dataSource;
+    
+//    public JdbcDaoImpl() throws Exception {
+//        connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/test?user=root&password=root");
+//        System.out.println("JdbcDaoImpl connection established");
+//    }
 
     public Circle getCircle(int id) {
         Circle circle = null;
         try {
+            connection = dataSource.getConnection();
             PreparedStatement sqlStatement = connection.prepareStatement("SELECT * from circle where id = ?");
             sqlStatement.setInt(1, id);
             ResultSet rs = sqlStatement.executeQuery();
@@ -59,5 +66,13 @@ public class JdbcDaoImpl {
         System.out.println("Spring terminating");
         connection.close();
         System.out.println("JdbcDaoImpl connection close");
+    }
+
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 }
