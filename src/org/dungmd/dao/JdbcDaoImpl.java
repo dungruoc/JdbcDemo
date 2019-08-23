@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.dungmd.model.Circle;
+import org.springframework.stereotype.Component;
 
 /*
  * Here, I make a connection to MariaDB server, installed on localhost
@@ -26,21 +28,36 @@ import org.dungmd.model.Circle;
  * 
  */
 
-
+@Component
 public class JdbcDaoImpl {
+    
+    private Connection connection; 
+    
+    public JdbcDaoImpl() throws Exception {
+        connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/test?user=root&password=root");
+        System.out.println("JdbcDaoImpl connection established");
+    }
 
-    public Circle getCircle(int id) throws Exception {
+    public Circle getCircle(int id) {
         Circle circle = null;
-        Connection connection = DriverManager.getConnection("jdbc:mariadb://localhost:3306/test?user=root&password=root");
-        PreparedStatement sqlStatement = connection.prepareStatement("SELECT * from circle where id = ?");
-        sqlStatement.setInt(1, id);
-        ResultSet rs = sqlStatement.executeQuery();
-        if (rs.next()) {
-            circle = new Circle(id, rs.getString("name"));
+        try {
+            PreparedStatement sqlStatement = connection.prepareStatement("SELECT * from circle where id = ?");
+            sqlStatement.setInt(1, id);
+            ResultSet rs = sqlStatement.executeQuery();
+            if (rs.next()) {
+                circle = new Circle(id, rs.getString("name"));
+            }
+            rs.close();
+            sqlStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        rs.close();
-        sqlStatement.close();
-        connection.close();
         return circle;
+    }
+    
+    public void myCleanup() throws Exception {
+        System.out.println("Spring terminating");
+        connection.close();
+        System.out.println("JdbcDaoImpl connection close");
     }
 }
