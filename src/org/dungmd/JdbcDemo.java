@@ -13,8 +13,15 @@ public class JdbcDemo {
             aContext.registerShutdownHook();
 
             JdbcDaoImpl jdbcDao = aContext.getBean("jdbcDaoImpl", JdbcDaoImpl.class);
-            Circle circle = jdbcDao.getCircle(1);
+            Circle circle = jdbcDao.getCircleById(1);
             System.out.println(circle.toString());
+            
+            jdbcDao.insertCircle(new Circle(3, "Third Name"));
+            System.out.println(jdbcDao.getCircleCount());
+            
+            for (Circle c : jdbcDao.getAllCircles()) {
+                System.out.println(c);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
